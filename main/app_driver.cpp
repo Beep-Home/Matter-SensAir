@@ -6,16 +6,7 @@ using namespace esp_matter;
 
 static const char *TAG = "app_driver";
 
-/**
- * @brief Update the attribute value based on the provided cluster and attribute ID.
- *
- * @param endpoint_id   The endpoint ID.
- * @param cluster_id    The cluster ID (e.g., PressureMeasurement, TemperatureMeasurement).
- * @param attribute_id  The attribute ID within the cluster.
- * @param number        The new value (float) to be updated.
- * @return esp_err_t    ESP_OK on success, or ESP_FAIL on error.
- */
-esp_err_t app_driver_attribute_update(uint16_t endpoint_id, uint32_t cluster_id, uint32_t attribute_id, float number) {
+esp_err_t app_driver_attribute_update(uint16_t endpoint_id, uint32_t cluster_id, uint32_t attribute_id, float *number) {
     esp_err_t err = ESP_OK;
 
     attribute_t *attribute = attribute::get(endpoint_id, cluster_id, attribute_id);
@@ -35,21 +26,21 @@ esp_err_t app_driver_attribute_update(uint16_t endpoint_id, uint32_t cluster_id,
 
     switch (cluster_id) {
         case PressureMeasurement::Id:
-            // Convert pressure from Pa to hPa (divide by 100).
-            val.val.i = static_cast<int>(number / 100);
-            ESP_LOGD(TAG, "Converting Pressure to hPa: %.2f Pa -> %i hPa", number, val.val.i);
+            // Convert pressure to Matter standard (divide by 100).
+            val.val.i = static_cast<int>(*number / 100);
+            ESP_LOGD(TAG, "Converting to Matter standard units: Raw Value = %.2f, Converted (divided by 100) = %d", *number, val.val.i);
             break;
 
         case TemperatureMeasurement::Id:
         case RelativeHumidityMeasurement::Id:
             // Convert temperature/humidity to Matter standard (multiply by 100).
-            val.val.i = static_cast<int>(number * 100);
-            ESP_LOGD(TAG, "Converting to Matter standard units: %.2f -> %i (scaled by 100)", number, val.val.i);
+            val.val.i = static_cast<int>(*number * 100);
+            ESP_LOGD(TAG, "Converting to Matter standard units: Raw Value = %.2f, Converted (multiplied by 100) = %d", *number, val.val.i);
             break;
 
         default:
-            val.val.i = static_cast<int>(number);
-            ESP_LOGW(TAG, "Using default value conversion: %.2f -> %i", number, val.val.i);
+            val.val.i = static_cast<int>(*number);
+            ESP_LOGW(TAG, "Unknown Measurement ID: Raw Value = %.2f, Converted (direct cast) = %d", *number, val.val.i);
             break;
     }
 

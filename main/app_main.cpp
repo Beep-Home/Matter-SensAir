@@ -134,7 +134,7 @@ void attribute_update_task(void *pvParameter) {
         err = app_driver_attribute_update(temperature_endpoint_id,
                                           TemperatureMeasurement::Id,
                                           TemperatureMeasurement::Attributes::MeasuredValue::Id,
-                                          temperature);
+                                          &temperature);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "Failed to update temperature");
         }
@@ -142,7 +142,7 @@ void attribute_update_task(void *pvParameter) {
         err = app_driver_attribute_update(pressure_endpoint_id,
                                           PressureMeasurement::Id,
                                           PressureMeasurement::Attributes::MeasuredValue::Id,
-                                          pressure);
+                                          &pressure);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "Failed to update pressure");
         }
@@ -150,7 +150,7 @@ void attribute_update_task(void *pvParameter) {
         err = app_driver_attribute_update(relative_humidity_endpoint_id,
                                           RelativeHumidityMeasurement::Id,
                                           RelativeHumidityMeasurement::Attributes::MeasuredValue::Id,
-                                          relative_humidity);
+                                          &relative_humidity);
         if (err != ESP_OK) {
             ESP_LOGE(TAG, "Failed to update relative humidity");
         }
@@ -172,18 +172,18 @@ extern "C" void app_main()
     ABORT_APP_ON_FAILURE(node != nullptr, ESP_LOGE(TAG, "Failed to create Matter node"));
 
     temperature_sensor::config_t temperature_measurement_config;
-    endpoint_t *temperature_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, 0);
+    endpoint_t *temperature_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
     temperature_endpoint_id = endpoint::get_id(temperature_endpoint);
 
     humidity_sensor::config_t humidity_measurement_config;
-    endpoint_t *humidity_endpoint = humidity_sensor::create(node, &humidity_measurement_config, ENDPOINT_FLAG_NONE, 0);
+    endpoint_t *humidity_endpoint = humidity_sensor::create(node, &humidity_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
     relative_humidity_endpoint_id = endpoint::get_id(humidity_endpoint);
 
     pressure_sensor::config_t pressure_measurement_config;
-    endpoint_t *pressure_endpoint = pressure_sensor::create(node, &pressure_measurement_config, ENDPOINT_FLAG_NONE, 0);
+    endpoint_t *pressure_endpoint = pressure_sensor::create(node, &pressure_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
     pressure_endpoint_id = endpoint::get_id(pressure_endpoint);
 
-    xTaskCreate(attribute_update_task, "attr_update_task", 4096, NULL, 5, NULL);
+    xTaskCreate(attribute_update_task, "attr_update_task", 4096, nullptr, 5, nullptr);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
     /* Set OpenThread platform config */

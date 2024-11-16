@@ -45,5 +45,5 @@ void sensor_read(bmx280_t *bmx280, float *temperature, float *pressure, float *h
 
     ESP_ERROR_CHECK(bmx280_readoutFloat(bmx280, temperature, pressure, humidity));
 
-    ESP_LOGI(TAG, "Read: temperature = %f, pressure = %f, humidity = %f", *temperature, *pressure, *humidity);
+    ESP_LOGI(TAG, "Readout (temperature = %f, pressure = %f, humidity = %f)", *temperature, *pressure, *humidity);
 }

@@ -8,19 +8,23 @@
 #endif
 
 /**
- * @brief Update a specific attribute in a given cluster and endpoint.
+ * @brief Updates a specified attribute within a given cluster and endpoint.
  *
- * @param endpoint_id   The ID of the endpoint to update.
- * @param cluster_id    The ID of the cluster containing the attribute.
- * @param attribute_id  The ID of the attribute to update.
- * @param number        The new value to set for the attribute.
+ * This function updates the value of a specified attribute in a given cluster
+ * on a specified endpoint, converting the provided value to the appropriate format
+ * as needed for Matter compliance.
  *
- * @return esp_err_t    ESP_OK on success, or an error code on failure.
+ * @param endpoint_id   The identifier of the endpoint where the attribute resides.
+ * @param cluster_id    The identifier of the cluster containing the attribute to be updated.
+ * @param attribute_id  The identifier of the attribute to be updated.
+ * @param number        Pointer to the new value to set for the attribute (as a float).
+ *
+ * @return esp_err_t    Returns ESP_OK on successful update, or an appropriate error code on failure.
  */
 esp_err_t app_driver_attribute_update(uint16_t endpoint_id,
                                       uint32_t cluster_id,
                                       uint32_t attribute_id,
-                                      float number);
+                                      float *number);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()                                           \
