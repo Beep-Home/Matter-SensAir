@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+sdkconfig
+managed_components
+cmake-build-*
+build
+*.old
