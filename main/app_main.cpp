@@ -7,13 +7,14 @@
 
 #include <common_macros.h>
 #include <app_priv.h>
-#include <sensor.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
 
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
+
+#include "led.h"
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -22,8 +23,6 @@ using namespace chip::app::Clusters;
 
 constexpr auto k_timeout_seconds = 300;
 static const char *TAG = "app_main";
-
-uint16_t endpoint_id = 0;
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
 extern const char decryption_key_start[] asm("_binary_esp_image_encryption_key_pem_start");
@@ -108,6 +107,9 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
                                        uint8_t effect_variant, void *priv_data)
 {
     ESP_LOGI(TAG, "Identification callback: type: %u, effect: %u, variant: %u", type, effect_id, effect_variant);
+
+    xTaskCreate(led_blink_task, "led_blink_task", 4096, nullptr, 5, nullptr);
+
     return ESP_OK;
 }
 
@@ -121,57 +123,20 @@ static esp_err_t app_attribute_update_cb(attribute::callback_type_t type, uint16
     return ESP_OK;
 }
 
-void attribute_update_task(void *pvParameter) {
-    esp_err_t err = ESP_OK;
-    bmx280_t* bmx280 = sensor_init();
-    float temperature = 0, pressure = 0, relative_humidity = 0;
-
-    while (true) {
-        sensor_read(bmx280, &temperature, &pressure, &relative_humidity);
-
-        err = app_driver_attribute_update(endpoint_id,
-                                          TemperatureMeasurement::Id,
-                                          TemperatureMeasurement::Attributes::MeasuredValue::Id,
-                                          &temperature);
-        if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to update temperature");
-        }
-
-        err = app_driver_attribute_update(endpoint_id,
-                                          PressureMeasurement::Id,
-                                          PressureMeasurement::Attributes::MeasuredValue::Id,
-                                          &pressure);
-        if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to update pressure");
-        }
-
-        err = app_driver_attribute_update(endpoint_id,
-                                          RelativeHumidityMeasurement::Id,
-                                          RelativeHumidityMeasurement::Attributes::MeasuredValue::Id,
-                                          &relative_humidity);
-        if (err != ESP_OK) {
-            ESP_LOGE(TAG, "Failed to update relative humidity");
-        }
-
-        // Delay 30 seconds between updates
-        vTaskDelay(pdMS_TO_TICKS(30'000));
-    }
-}
-
 extern "C" void app_main()
 {
     esp_err_t err = ESP_OK;
 
     nvs_flash_init();
 
-    node::config_t node_config;
+    led_init();
 
+    node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
-    ABORT_APP_ON_FAILURE(node != nullptr, ESP_LOGE(TAG, "Failed to create Matter node"));
 
     temperature_sensor::config_t temperature_measurement_config;
     endpoint_t *sensor_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
-    endpoint_id = endpoint::get_id(sensor_endpoint);
+    uint16_t endpoint_id = endpoint::get_id(sensor_endpoint);
 
     cluster_t *temperature_cluster = cluster::create(sensor_endpoint, TemperatureMeasurement::Id, CLUSTER_FLAG_SERVER);
     attribute::create(temperature_cluster, TemperatureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
@@ -182,7 +147,7 @@ extern "C" void app_main()
     cluster_t *relative_humidity_cluster = cluster::create(sensor_endpoint, RelativeHumidityMeasurement::Id, CLUSTER_FLAG_SERVER);
     attribute::create(relative_humidity_cluster, RelativeHumidityMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
 
-    xTaskCreate(attribute_update_task, "attr_update_task", 4096, nullptr, 5, nullptr);
+    xTaskCreate(app_driver_attribute_update_task, "attribute_update_task", 4096, &endpoint_id, 5, nullptr);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
     /* Set OpenThread platform config */

@@ -4,6 +4,8 @@ dependencies:
     rules: # will add "optional_component" only when all if clauses are True
       - if: "idf_version >=5.0"
       - if: "target in [esp32c2]"
+  espressif/led_strip:
+    version: "^2.4.1"
   utkumaden/esp-idf-bmx280:
     git: https://github.com/utkumaden/esp-idf-bmx280.git
     version: master

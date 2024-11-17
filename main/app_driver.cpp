@@ -1,12 +1,56 @@
+#include "app_priv.h"
+
 #include <esp_log.h>
 #include <esp_matter.h>
+
+#include <sensor.h>
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
 
 static const char *TAG = "app_driver";
 
-esp_err_t app_driver_attribute_update(uint16_t endpoint_id, uint32_t cluster_id, uint32_t attribute_id, float *number) {
+[[noreturn]] void app_driver_attribute_update_task(void *pvParameter) {
+    uint16_t endpoint_id = *(reinterpret_cast<uint16_t*>(pvParameter));
+
+    esp_err_t err = ESP_OK;
+    bmx280_t* bmx280 = sensor_init();
+    float temperature = 0, pressure = 0, relative_humidity = 0;
+
+    while (true) {
+        sensor_read(bmx280, &temperature, &pressure, &relative_humidity);
+
+        err = app_driver_attribute_update(endpoint_id,
+                                          TemperatureMeasurement::Id,
+                                          TemperatureMeasurement::Attributes::MeasuredValue::Id,
+                                          &temperature);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to update temperature");
+        }
+
+        err = app_driver_attribute_update(endpoint_id,
+                                          PressureMeasurement::Id,
+                                          PressureMeasurement::Attributes::MeasuredValue::Id,
+                                          &pressure);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to update pressure");
+        }
+
+        err = app_driver_attribute_update(endpoint_id,
+                                          RelativeHumidityMeasurement::Id,
+                                          RelativeHumidityMeasurement::Attributes::MeasuredValue::Id,
+                                          &relative_humidity);
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Failed to update relative humidity");
+        }
+
+        // Delay 30 seconds between updates
+        vTaskDelay(pdMS_TO_TICKS(30'000));
+    }
+}
+
+esp_err_t app_driver_attribute_update(uint16_t endpoint_id, uint32_t cluster_id, uint32_t attribute_id, const float *number)
+{
     esp_err_t err = ESP_OK;
 
     attribute_t *attribute = attribute::get(endpoint_id, cluster_id, attribute_id);
