@@ -23,9 +23,7 @@ using namespace chip::app::Clusters;
 constexpr auto k_timeout_seconds = 300;
 static const char *TAG = "app_main";
 
-uint16_t temperature_endpoint_id = 0;
-uint16_t pressure_endpoint_id = 0;
-uint16_t relative_humidity_endpoint_id = 0;
+uint16_t endpoint_id = 0;
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
 extern const char decryption_key_start[] asm("_binary_esp_image_encryption_key_pem_start");
@@ -131,7 +129,7 @@ void attribute_update_task(void *pvParameter) {
     while (true) {
         sensor_read(bmx280, &temperature, &pressure, &relative_humidity);
 
-        err = app_driver_attribute_update(temperature_endpoint_id,
+        err = app_driver_attribute_update(endpoint_id,
                                           TemperatureMeasurement::Id,
                                           TemperatureMeasurement::Attributes::MeasuredValue::Id,
                                           &temperature);
@@ -139,7 +137,7 @@ void attribute_update_task(void *pvParameter) {
             ESP_LOGE(TAG, "Failed to update temperature");
         }
 
-        err = app_driver_attribute_update(pressure_endpoint_id,
+        err = app_driver_attribute_update(endpoint_id,
                                           PressureMeasurement::Id,
                                           PressureMeasurement::Attributes::MeasuredValue::Id,
                                           &pressure);
@@ -147,7 +145,7 @@ void attribute_update_task(void *pvParameter) {
             ESP_LOGE(TAG, "Failed to update pressure");
         }
 
-        err = app_driver_attribute_update(relative_humidity_endpoint_id,
+        err = app_driver_attribute_update(endpoint_id,
                                           RelativeHumidityMeasurement::Id,
                                           RelativeHumidityMeasurement::Attributes::MeasuredValue::Id,
                                           &relative_humidity);
@@ -172,16 +170,17 @@ extern "C" void app_main()
     ABORT_APP_ON_FAILURE(node != nullptr, ESP_LOGE(TAG, "Failed to create Matter node"));
 
     temperature_sensor::config_t temperature_measurement_config;
-    endpoint_t *temperature_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
-    temperature_endpoint_id = endpoint::get_id(temperature_endpoint);
+    endpoint_t *sensor_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
+    endpoint_id = endpoint::get_id(sensor_endpoint);
 
-    humidity_sensor::config_t humidity_measurement_config;
-    endpoint_t *humidity_endpoint = humidity_sensor::create(node, &humidity_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
-    relative_humidity_endpoint_id = endpoint::get_id(humidity_endpoint);
+    cluster_t *temperature_cluster = cluster::create(sensor_endpoint, TemperatureMeasurement::Id, CLUSTER_FLAG_SERVER);
+    attribute::create(temperature_cluster, TemperatureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
 
-    pressure_sensor::config_t pressure_measurement_config;
-    endpoint_t *pressure_endpoint = pressure_sensor::create(node, &pressure_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
-    pressure_endpoint_id = endpoint::get_id(pressure_endpoint);
+    cluster_t *pressure_cluster = cluster::create(sensor_endpoint, PressureMeasurement::Id, CLUSTER_FLAG_SERVER);
+    attribute::create(pressure_cluster, PressureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
+
+    cluster_t *relative_humidity_cluster = cluster::create(sensor_endpoint, RelativeHumidityMeasurement::Id, CLUSTER_FLAG_SERVER);
+    attribute::create(relative_humidity_cluster, RelativeHumidityMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
 
     xTaskCreate(attribute_update_task, "attr_update_task", 4096, nullptr, 5, nullptr);
 
