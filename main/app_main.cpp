@@ -14,6 +14,7 @@
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
 
+#include "button.h"
 #include "led.h"
 
 using namespace esp_matter;
@@ -123,6 +124,12 @@ static esp_err_t app_attribute_update_cb(attribute::callback_type_t type, uint16
     return ESP_OK;
 }
 
+static void factory_reset()
+{
+    ESP_LOGI(TAG, "Reset button pressed!");
+    chip::DeviceLayer::ConfigurationMgr().InitiateFactoryReset();
+}
+
 extern "C" void app_main()
 {
     esp_err_t err = ESP_OK;
@@ -130,6 +137,8 @@ extern "C" void app_main()
     nvs_flash_init();
 
     led_init();
+
+    xTaskCreate(button_monitor_task, "button_monitor_task", 2048, (void *)factory_reset, 10, nullptr);
 
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);

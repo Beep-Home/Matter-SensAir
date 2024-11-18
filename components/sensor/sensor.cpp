@@ -3,7 +3,7 @@
 #include <esp_log.h>
 #include <cstdlib>
 
-static const char *TAG = "sensor";
+static const char *TAG = "SENSOR";
 
 bmx280_t *sensor_init() {
     i2c_config_t i2c_cfg = {

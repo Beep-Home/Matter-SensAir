@@ -3,7 +3,7 @@
 #include <esp_log.h>
 #include <cstdlib>
 
-static const char *TAG = "led";
+static const char *TAG = "LED_STRIP";
 
 static led_strip_handle_t led_strip;
 
@@ -31,7 +31,7 @@ void led_init()
 void led_blink_task(void *pvParameter)
 {
     uint8_t blinksPerSecond = 4;
-    uint8_t durationSeconds = 3;
+    uint8_t durationSeconds = 15;
     uint16_t delayMs = 1000 / (blinksPerSecond * 2);
 
     for (uint8_t i = 0; i < blinksPerSecond * durationSeconds; i++) {
@@ -46,4 +46,3 @@ void led_blink_task(void *pvParameter)
 
     vTaskDelete(nullptr);
 }
-
