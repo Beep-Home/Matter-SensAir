@@ -11,11 +11,16 @@
 void led_init();
 
 /**
- * @brief A FreeRTOS task to blink the onboard LED.
+ * @brief Task that blinks an LED at a specified rate until terminated.
  *
- * @param pvParameter Unused parameter (can be set to nullptr).
+ * This task controls an LED strip to blink the first LED with a specified
+ * frequency. It toggles the LED on and off at a rate determined by the
+ * `blinksPerSecond` variable, which is set to 4 blinks per second by default.
+ * The task checks for termination status on each cycle and exits cleanly when
+ * requested.
  *
- * This task blinks the LED at a frequency of 4 blinks per second for a total duration
- * of 3 seconds. It deletes itself after completing the blinking sequence.
+ * @param pvParameter Pointer to a boolean flag (`bool *terminate_task`).
+ *                    When the boolean flag is set to `true`, the task will
+ *                    stop blinking and terminate itself by calling `vTaskDelete`.
  */
 void led_blink_task(void *pvParameter);

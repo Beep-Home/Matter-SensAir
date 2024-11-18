@@ -25,6 +25,8 @@ using namespace chip::app::Clusters;
 constexpr auto k_timeout_seconds = 300;
 static const char *TAG = "app_main";
 
+static volatile bool terminate_identification_task = false;
+
 #if CONFIG_ENABLE_ENCRYPTED_OTA
 extern const char decryption_key_start[] asm("_binary_esp_image_encryption_key_pem_start");
 extern const char decryption_key_end[] asm("_binary_esp_image_encryption_key_pem_end");
@@ -109,7 +111,12 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
 {
     ESP_LOGI(TAG, "Identification callback: type: %u, effect: %u, variant: %u", type, effect_id, effect_variant);
 
-    xTaskCreate(led_blink_task, "led_blink_task", 4096, nullptr, 5, nullptr);
+    if (type == esp_matter::identification::START) {
+        terminate_identification_task = false;
+        xTaskCreate(led_blink_task, "led_blink_task", 4096, (void *)&terminate_identification_task, 5, nullptr);
+    } else if (type == esp_matter::identification::STOP) {
+        terminate_identification_task = true;
+    }
 
     return ESP_OK;
 }
@@ -124,9 +131,9 @@ static esp_err_t app_attribute_update_cb(attribute::callback_type_t type, uint16
     return ESP_OK;
 }
 
-static void factory_reset()
+static void app_factory_reset_cb()
 {
-    ESP_LOGI(TAG, "Reset button pressed!");
+    ESP_LOGW(TAG, "Factory reset started");
     chip::DeviceLayer::ConfigurationMgr().InitiateFactoryReset();
 }
 
@@ -138,7 +145,7 @@ extern "C" void app_main()
 
     led_init();
 
-    xTaskCreate(button_monitor_task, "button_monitor_task", 2048, (void *)factory_reset, 10, nullptr);
+    xTaskCreate(button_monitor_task, "button_monitor_task", 2048, (void *)app_factory_reset_cb, 10, nullptr);
 
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);

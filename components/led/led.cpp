@@ -30,19 +30,23 @@ void led_init()
 
 void led_blink_task(void *pvParameter)
 {
+    bool *terminate_task = (bool *)pvParameter;
+
     uint8_t blinksPerSecond = 4;
-    uint8_t durationSeconds = 15;
     uint16_t delayMs = 1000 / (blinksPerSecond * 2);
 
-    for (uint8_t i = 0; i < blinksPerSecond * durationSeconds; i++) {
-        led_strip_set_pixel(led_strip, 0, 255, 255, 255);
+    while (true) {
+        led_strip_set_pixel(led_strip, 0, 255, 0, 0);
         led_strip_refresh(led_strip);
         vTaskDelay(pdMS_TO_TICKS(delayMs));
 
         led_strip_set_pixel(led_strip, 0, 0, 0, 0);
         led_strip_refresh(led_strip);
         vTaskDelay(pdMS_TO_TICKS(delayMs));
-    }
 
-    vTaskDelete(nullptr);
+        if (*terminate_task) {
+            vTaskDelete(nullptr);
+            break;
+        }
+    }
 }
