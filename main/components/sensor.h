@@ -1,12 +1,12 @@
 #pragma once
 
-#include "bmx280.h"
-#include "driver/i2c.h"
+#include <bmx280.h>
+#include <driver/i2c.h>
 
-#define SENSOR_I2C_MASTER_NUM I2C_NUM_0             // I2C port number for master
+#define SENSOR_I2C_MASTER_NUM I2C_NUM_0               // I2C port number for master
 #define SENSOR_I2C_SDA_IO CONFIG_SENSOR_I2C_SDA_GPIO  // I2C SDA pin
 #define SENSOR_I2C_SCL_IO CONFIG_SENSOR_I2C_SCL_GPIO  // I2C SCL pin
-#define SENSOR_I2C_FREQ_HZ 100000                   // I2C clock frequency (100 kHz)
+#define SENSOR_I2C_FREQ_HZ 100000                     // I2C clock frequency (100 kHz)
 
 /**
  * @brief Initialize the BMX280 sensor.

@@ -1,4 +1,4 @@
-CONFIG_CHIP_PROJECT_CONFIG="main/include/CHIPDeviceConfig.h"
+CONFIG_CHIP_PROJECT_CONFIG="main/chip/device_config.h"
 
 # Default to 921600 baud when flashing and monitoring device
 CONFIG_ESPTOOLPY_BAUD_921600B=y

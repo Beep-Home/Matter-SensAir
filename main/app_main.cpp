@@ -14,8 +14,8 @@
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
 
-#include "button.h"
-#include "led.h"
+#include "components/button.h"
+#include "components/led.h"
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;

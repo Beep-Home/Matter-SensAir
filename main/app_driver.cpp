@@ -3,7 +3,7 @@
 #include <esp_log.h>
 #include <esp_matter.h>
 
-#include <sensor.h>
+#include "components/sensor.h"
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
