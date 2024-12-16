@@ -1,5 +1,4 @@
 #include "led.h"
-
 #include <esp_log.h>
 #include <cstdlib>
 
@@ -12,7 +11,7 @@ void led_init()
     ESP_LOGI(TAG, "Initializing onboard LED strip");
 
     led_strip_config_t strip_config = {
-            .strip_gpio_num = 8,
+            .strip_gpio_num = CONFIG_LED_GPIO,
             .max_leds = 1
     };
 

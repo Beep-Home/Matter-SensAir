@@ -2,7 +2,7 @@
 
 #include "driver/gpio.h"
 
-#define BOOT_BUTTON_GPIO GPIO_NUM_9
+#define BOOT_BUTTON_GPIO CONFIG_BUTTON_GPIO
 
 /**
  * @brief Task to monitor the boot button press and release.

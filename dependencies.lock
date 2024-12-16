@@ -1,4 +1,15 @@
 dependencies:
+  espressif/cbor:
+    component_hash: 440f4ee4504841cc9b4f3a8ef755776a612ac9dace355514c68b999868f990ff
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.3'
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 0.6.0~1
   espressif/esp-serial-flasher:
     component_hash: dcc42a16712a1a636509cf0bf90e14032d7f2141784b533613b267b6aa318d52
     dependencies: []
@@ -17,6 +28,32 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 1.1.0
+  espressif/esp_diag_data_store:
+    component_hash: 8849195251dbb8a2d7268335277cfa310cef36e4ac1e90cd59ad3be4269a30d7
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.1'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.1
+  espressif/esp_diagnostics:
+    component_hash: fe19f5ee7f0145f406d36a4d5310e4ae0c6ee1afa47f2681ada8a2ea8582d390
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.1'
+    - name: espressif/rmaker_common
+      registry_url: https://components.espressif.com
+      require: private
+      version: ~1.4.0
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 1.0.2
   espressif/esp_encrypted_img:
     component_hash: 1c34d5b0e70a3878e63fe2bedb00824bcf83c30d9b020029c38400d0d14fe182
     dependencies:
@@ -28,6 +65,35 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 2.1.0
+  espressif/esp_insights:
+    component_hash: 2472a19de98a8b991baeeac7209765b70ce14ec2b1435dbed3abd020dd0f7227
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.1'
+    - name: espressif/rmaker_common
+      registry_url: https://components.espressif.com
+      require: private
+      version: ~1.4.0
+    - name: espressif/esp_diagnostics
+      registry_url: https://components.espressif.com
+      require: private
+      version: ~1.0
+    - name: espressif/esp_diag_data_store
+      registry_url: https://components.espressif.com
+      require: private
+      version: ~1.0
+    - name: espressif/cbor
+      registry_url: https://components.espressif.com
+      require: private
+      rules:
+      - if: idf_version >=5.0
+      version: ~0.6
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.1
   espressif/esp_rcp_update:
     component_hash: c10afbd54a17f27eed880e61262b161656e6d36ad63376c307f9273e99d0abcd
     dependencies:
@@ -96,10 +162,27 @@ dependencies:
       registry_url: https://components.espressif.com/
       type: service
     version: 2.5.5
+  espressif/mdns:
+    component_hash: f5267872ed0c810d1b281c41a567cace7b3a3695c0df9dff89f631e9ba426ed0
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.4.2
+  espressif/rmaker_common:
+    component_hash: a3a1df881278d0351fc850b77792fe8a196ddd6dcacbea203d606329cc6a0239
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 1.4.6
   idf:
     source:
       type: idf
-    version: 5.2.3
+    version: 5.2.1
   utkumaden/esp-idf-bmx280:
     component_hash: a1037a63d0087cc8eb1d5a8e1ed7d32153e5b1f058e8d6864a76b2d18b310fc9
     dependencies: []
@@ -110,13 +193,16 @@ dependencies:
     version: 298cbec7fc7b32abd30b7e00b37ad71e3ab0ec81
 direct_dependencies:
 - espressif/esp_delta_ota
+- espressif/esp_diag_data_store
 - espressif/esp_encrypted_img
+- espressif/esp_insights
 - espressif/esp_rcp_update
 - espressif/esp_secure_cert_mgr
 - espressif/json_generator
 - espressif/json_parser
 - espressif/led_strip
+- espressif/mdns
 - utkumaden/esp-idf-bmx280
 manifest_hash: 6955322eca00e3bb9c3b5e7f92eadc6bc59d3892eaf64cf8113b724203532a95
-target: esp32h2
+target: esp32c6
 version: 2.0.0

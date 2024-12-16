@@ -145,7 +145,7 @@ extern "C" void app_main()
 
     led_init();
 
-    xTaskCreate(button_monitor_task, "button_monitor_task", 2048, (void *)app_factory_reset_cb, 10, nullptr);
+    xTaskCreate(button_monitor_task, "button_monitor_task", 4096, (void *)app_factory_reset_cb, 10, nullptr);
 
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);

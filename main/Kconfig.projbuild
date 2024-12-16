@@ -1,0 +1,25 @@
+menu "Configure GPIO pins"
+    config LED_GPIO
+        int "Status LED GPIO"
+        default 8
+        help
+            Define the GPIO to use as status LED the default pin refers to the built-in RGB led present on the esp32H2 dev board.
+
+    config BUTTON_GPIO
+        int "Reset button GPIO"
+        default 9
+        help
+            Define the GPIO to use as reset button the default pin refers to the built-in boot button present on the esp32H2 dev board.
+
+    config SENSOR_I2C_SDA_GPIO
+        int "I2C sensor SDA GPIO"
+        default 22
+        help
+            GPIO pin used to connect to the SDA of the bme280 sensor.
+
+    config SENSOR_I2C_SCL_GPIO
+        int "I2C sensor SCL GPIO"
+        default 12
+        help
+            GPIO pin used to connect to the SCL of the bme280 sensor.
+endmenu
