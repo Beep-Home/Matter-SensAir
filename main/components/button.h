@@ -43,4 +43,4 @@ struct ButtonMonitorTaskParameter {
  * xTaskCreate(button_monitor_task, "Button Task", 2048, &params, 5, NULL);
  * @endcode
  */
-void button_monitor_task(void *pvParameters);
+[[noreturn]] void button_monitor_task(void *pvParameters);

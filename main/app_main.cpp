@@ -15,7 +15,7 @@
 #include <app/server/Server.h>
 
 #include "components/button.h"
-#include "components/led.h"
+#include "components/led_strip.h"
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -25,7 +25,24 @@ using namespace chip::app::Clusters;
 constexpr auto k_timeout_seconds = 300;
 static const char *TAG = "app_main";
 
+static volatile bool terminate_commissioning_task = false;
 static volatile bool terminate_identification_task = false;
+
+LedStripBlinkTaskParameter commissioning_task_params = {
+    .red = 0,
+    .green = 025,
+    .blue = 0,
+    .blinksPerMinute = 30,
+    .terminateTask = &terminate_commissioning_task
+};
+
+LedStripBlinkTaskParameter identification_task_params = {
+    .red = 255,
+    .green = 0,
+    .blue = 0,
+    .blinksPerMinute = 4 * 60,
+    .terminateTask = &terminate_identification_task
+};
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
 extern const char decryption_key_start[] asm("_binary_esp_image_encryption_key_pem_start");
@@ -61,10 +78,13 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
 
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowOpened:
         ESP_LOGI(TAG, "Commissioning window opened");
+        terminate_commissioning_task = false;
+        xTaskCreate(led_strip_blink_task, "led_strip_commissioning_blink_task", 4096, &commissioning_task_params, 10, nullptr);
         break;
 
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowClosed:
         ESP_LOGI(TAG, "Commissioning window closed");
+        terminate_commissioning_task = true;
         break;
 
     case chip::DeviceLayer::DeviceEventType::kFabricRemoved: {
@@ -113,7 +133,7 @@ static esp_err_t app_identification_cb(identification::callback_type_t type, uin
 
     if (type == esp_matter::identification::START) {
         terminate_identification_task = false;
-        xTaskCreate(led_blink_task, "led_blink_task", 4096, (void *)&terminate_identification_task, 5, nullptr);
+        xTaskCreate(led_strip_blink_task, "led_strip_identification_blink_task", 4096, &identification_task_params, 10, nullptr);
     } else if (type == esp_matter::identification::STOP) {
         terminate_identification_task = true;
     }
@@ -143,11 +163,11 @@ extern "C" void app_main()
 
     nvs_flash_init();
 
-    led_init();
+    led_strip_init();
 
     ButtonMonitorTaskParameter params = {
         .pin = gpio_num_t(CONFIG_BUTTON_GPIO),
-        .longPressThreshold = 10000, // 10000ms = 10 seconds
+        .longPressThreshold = 8500, // In milliseconds (~10 seconds)
         .onPressCallback = nullptr,
         .onLongPressCallback = app_factory_reset_cb
     };

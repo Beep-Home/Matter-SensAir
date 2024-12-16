@@ -5,7 +5,7 @@
 
 static const char *TAG = "BUTTON";
 
-void button_monitor_task(void *pvParameter) {
+[[noreturn]] void button_monitor_task(void *pvParameter) {
     auto *params = (ButtonMonitorTaskParameter *)pvParameter;
     gpio_num_t pin = params->pin;
     unsigned long longPressThreshold = params->longPressThreshold;
