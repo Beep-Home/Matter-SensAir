@@ -1,4 +1,29 @@
 dependencies:
+  espressif/button:
+    component_hash: dddfbf885283f0415391c9851e3df613f77f7a3dac60e766ddbebd912854bce2
+    dependencies:
+    - name: espressif/cmake_utilities
+      registry_url: https://components.espressif.com
+      require: private
+      version: 0.*
+    - name: idf
+      require: private
+      version: '>=4.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 3.4.1
+  espressif/cmake_utilities:
+    component_hash: 351350613ceafba240b761b4ea991e0f231ac7a9f59a9ee901f751bddc0bb18f
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.1'
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 0.5.3
   espressif/esp-serial-flasher:
     component_hash: dcc42a16712a1a636509cf0bf90e14032d7f2141784b533613b267b6aa318d52
     dependencies: []
@@ -136,6 +161,7 @@ dependencies:
       type: git
     version: b48a6e2fa948d776765f49f3dcc948bb58d48a03
 direct_dependencies:
+- espressif/button
 - espressif/esp_delta_ota
 - espressif/esp_encrypted_img
 - espressif/esp_matter
@@ -145,6 +171,6 @@ direct_dependencies:
 - espressif/json_parser
 - espressif/led_strip
 - utkumaden/esp-idf-bmx280
-manifest_hash: 69eea6a14ce9daf35203f2bf10c2bda3f095f57dc9301dd7ed2c578a92f133dc
+manifest_hash: ed84a93d28e8cc591198c4d43f0b3f4f571dcb2ddabacd4a22f9955c93a7aa80
 target: esp32h2
 version: 2.0.0

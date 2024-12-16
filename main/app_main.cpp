@@ -145,7 +145,13 @@ extern "C" void app_main()
 
     led_init();
 
-    xTaskCreate(button_monitor_task, "button_monitor_task", 4096, (void *)app_factory_reset_cb, 10, nullptr);
+    ButtonMonitorTaskParameter params = {
+        .pin = gpio_num_t(CONFIG_BUTTON_GPIO),
+        .longPressThreshold = 10000, // 10000ms = 10 seconds
+        .onPressCallback = nullptr,
+        .onLongPressCallback = app_factory_reset_cb
+    };
+    xTaskCreate(button_monitor_task, "button_monitor_task", 4096, &params, 10, nullptr);
 
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
