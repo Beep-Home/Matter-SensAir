@@ -1,0 +1,60 @@
+image: espressif/esp-matter:latest_idf_v5.2.3
+
+stages:
+  - build
+
+build_esp32c6_thread:
+  stage: build
+  script: |
+    version=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+    idf.py \
+      -D SDKCONFIG_DEFAULTS="sdkconfig.defaults.esp32c6_thread" \
+      -D CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING="${version:="0.0.0"}" \
+      build
+  artifacts:
+    paths:
+      - build/SensAir.bin
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
+build_esp32c6_wifi:
+  stage: build
+  script: |
+    version=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+    idf.py \
+      -D SDKCONFIG_DEFAULTS="sdkconfig.defaults.esp32c6_wifi" \
+      -D CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING="${version:="0.0.0"}" \
+      build
+  artifacts:
+    paths:
+      - build/SensAir.bin
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
+build_esp32h2_thread:
+  stage: build
+  script: |
+    version=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+    idf.py \
+      -D SDKCONFIG_DEFAULTS="sdkconfig.defaults.esp32h2_thread" \
+      -D CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING="${version:="0.0.0"}" \
+      build
+  artifacts:
+    paths:
+      - build/SensAir.bin
+  only:
+    - /^v\d+\.\d+\.\d+$/
+
+build_esp32s3_wifi:
+  stage: build
+  script: |
+    version=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+    idf.py \
+      -D SDKCONFIG_DEFAULTS="sdkconfig.defaults.esp32s3_wifi" \
+      -D CHIP_DEVICE_CONFIG_DEVICE_SOFTWARE_VERSION_STRING="${version:="0.0.0"}" \
+      build
+  artifacts:
+    paths:
+      - build/SensAir.bin
+  only:
+    - /^v\d+\.\d+\.\d+$/

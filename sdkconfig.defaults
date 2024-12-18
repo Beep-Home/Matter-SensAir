@@ -1,6 +1,7 @@
+# General
 CONFIG_CHIP_PROJECT_CONFIG="main/chip/device_config.h"
 
-# Default to 921600 baud when flashing and monitoring device
+# Flashing and Monitoring Configuration
 CONFIG_ESPTOOLPY_BAUD_921600B=y
 CONFIG_ESPTOOLPY_BAUD=921600
 CONFIG_ESPTOOLPY_COMPRESSED=y
@@ -8,37 +9,33 @@ CONFIG_ESPTOOLPY_MONITOR_BAUD_115200B=y
 CONFIG_ESPTOOLPY_MONITOR_BAUD=115200
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 
-#enable BT
+# Bluetooth
 CONFIG_BT_ENABLED=y
 CONFIG_BT_NIMBLE_ENABLED=y
 
-#disable BT connection reattempt
+# Disable Bluetooth connection reattempt
 CONFIG_BT_NIMBLE_ENABLE_CONN_REATTEMPT=n
 
-#enable lwip ipv6 autoconfig
-CONFIG_LWIP_IPV6_AUTOCONFIG=y
-
-# Use a custom partition table
+# Partition Table
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
 CONFIG_PARTITION_TABLE_OFFSET=0xC000
 
-# Enable chip shell
-CONFIG_ENABLE_CHIP_SHELL=y
+# FreeRTOS
+CONFIG_FREERTOS_ENABLE_BACKWARD_COMPATIBILITY=y
 
-#enable lwIP route hooks
+# CHIP and OTA
+CONFIG_ENABLE_CHIP_SHELL=y
+CONFIG_ENABLE_OTA_REQUESTOR=n
+
+# Network
 CONFIG_LWIP_HOOK_IP6_ROUTE_DEFAULT=y
 CONFIG_LWIP_HOOK_ND6_GET_GW_DEFAULT=y
 
-# disable softap by default
+# Disable Wi-Fi SoftAP support
 CONFIG_ESP_WIFI_SOFTAP_SUPPORT=n
 
-# Disable DS Peripheral
+# Security
 CONFIG_ESP_SECURE_CERT_DS_PERIPHERAL=n
-
-# Enable HKDF in mbedtls
+CONFIG_LIBSODIUM_USE_MBEDTLS_SHA=y
 CONFIG_MBEDTLS_HKDF_C=y
-
-# Increase LwIP IPv6 address number to 6 (MAX_FABRIC + 1)
-# unique local addresses for fabrics(MAX_FABRIC), a link local address(1)
-CONFIG_LWIP_IPV6_NUM_ADDRESSES=6

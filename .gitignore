@@ -2,6 +2,7 @@
 .vscode
 .DS_Store
 sdkconfig
+dependencies.lock
 managed_components
 cmake-build-*
 build
