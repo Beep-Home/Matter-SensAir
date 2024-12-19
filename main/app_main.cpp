@@ -180,8 +180,10 @@ extern "C" void app_main()
     endpoint_t *sensor_endpoint = temperature_sensor::create(node, &temperature_measurement_config, ENDPOINT_FLAG_NONE, nullptr);
     uint16_t endpoint_id = endpoint::get_id(sensor_endpoint);
 
-    cluster_t *temperature_cluster = cluster::create(sensor_endpoint, TemperatureMeasurement::Id, CLUSTER_FLAG_SERVER);
-    attribute::create(temperature_cluster, TemperatureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
+    // Note: The temperature cluster has already been created with the temperature sensor endpoint.
+    // The following code demonstrates how to create a temperature cluster and add the MeasuredValue attribute:
+    //    cluster_t *temperature_cluster = cluster::create(sensor_endpoint, TemperatureMeasurement::Id, CLUSTER_FLAG_SERVER);
+    //    attribute::create(temperature_cluster, TemperatureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
 
     cluster_t *pressure_cluster = cluster::create(sensor_endpoint, PressureMeasurement::Id, CLUSTER_FLAG_SERVER);
     attribute::create(pressure_cluster, PressureMeasurement::Attributes::MeasuredValue::Id, ATTRIBUTE_FLAG_NONE, esp_matter_uint16(0));
